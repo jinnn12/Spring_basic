@@ -14,7 +14,6 @@ import java.util.*;
 
 // transactional 추가설명필요
 @Service // == @Component로 대체 가능(트랜잭션 처리가 없는 경우)
-
 @RequiredArgsConstructor
 public class AuthorService {
 ////    의존성 주입(DI) 방법1. Autowired 어노테이션 사용 -> 필드 주입 (싱글톤을 갖다가 쓰겠다), 서비스가 1개가 아니라 여러개일수도 있잖아

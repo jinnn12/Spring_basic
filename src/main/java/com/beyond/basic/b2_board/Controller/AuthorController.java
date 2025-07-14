@@ -44,8 +44,6 @@ public class AuthorController {
 
     //    회원상세조회 (Id로 조회) : /author/detail/1
 //    서버에서 별도의 try catch를 하지 않으면, 에러 발생 시 500에러 + 스프링의 포맷으로 에러를 리턴
-
-
     @GetMapping("/detail/{id}")
     public Author findByIdprac(@PathVariable Long id) {
         try {
