@@ -108,7 +108,21 @@ public class helloController {
         return "helloworld2"; // @ResponseBody가 없으니 문자열.html을 찾으려고 함(화면을 찾으려고) 그래서 이 놈이 띄어쓰기가 되면 안됨!
     }
 
-    //    Post요청의 case 2가지 : url 인코딩 방식 또는 multipart-formdata, json
+    //    case7-1) PathVariable 형식으로 만들어보기
+    @GetMapping("/model-path/{inputId}")
+    public String modelPath(@PathVariable("inputId") Long inputId, Model model) {
+        if (inputId == 1) {
+            model.addAttribute("name", "kim");
+            model.addAttribute("email", "kim@naver.com");
+        } else if (inputId == 2) {
+            model.addAttribute("name", "kim2");
+            model.addAttribute("email", "kim2@naver.com");
+        }
+        return "helloworld2";
+    }
+
+    //    Post요청의 case 2가지 : form-data(url 인코딩, multipart) / json
+    //    url 인코딩 방식 또는 multipart-formdata(두 개는 param), json
 //    case1. text만 있는 form-data 형식
 //    형식 : body에 name=xxx&email=xxx -> parameter방식 / post니까 body에 넣는게..
     @GetMapping("/form-view")
@@ -189,17 +203,26 @@ public class helloController {
     }
 
 //    case6. json(text) + file 같이 처리할 때 : 텍스트구조가 복잡(계층구조를 갖고있다)하여 피치 못하게 json 구조를 사용해야 하는 경우
-//    데이터형식 : hello={name:"xx", email:"xxx@naver.com"}&photo=image.jpg
+//    text + file 서버로 post 요청
+//    데이터형식 : hello={name:"xx", email:"xxx@naver.com"}&photo=image.jpg , 문자열 중에서도 json이 들어오는 것을 문제삼고 얘기중
 //    ..결론 : 단순 json구조가 아닌, multipart-formdata 구조 안에 json을 넣는 구조
-//    @GetMapping("/axios-json-file-view")
-//    public String axiosJsonFileView() {
-//    return "axios-nested-json-view";
-//}
-//    @PostMapping("/axios-json-file-view")
-//    @ResponseBody
-//    public String axiosJsonFileView(){
-//        System.out.println();
-//        return "ok";
-//    }
+    @GetMapping("/axios-json-file-view")
+    public String axiosJsonFileView() {
+        return "axios-json-file-view";
+    }
+
+    @PostMapping("/axios-json-file-view")
+    @ResponseBody
+    public String axiosJsonFileView( // json과 file을 함께 처리해야 할 때 RequestPart 일반적으로 활용
+                                    @RequestPart("hello") Hello hello, // "hello"로 hello 키값을 꺼냄
+                                    @RequestPart("photo") MultipartFile photo
+    ){
+        System.out.println(hello);
+        System.out.println(photo.getOriginalFilename());
+        return "ok";
+    }
+
+
+
 
 }

@@ -27,7 +27,7 @@
             serverData.append('email', email);
             serverData.append('photo', file);
 
-            const result = await axios.post("http://localhost:8080/hello/axios-multi-file-view", serverData);
+            const result = await axios.post("http://localhost:8080/hello/axios-file-view", serverData);
             alert("성공적으로 가입되었습니다.");
             window.location.reload();
     }
