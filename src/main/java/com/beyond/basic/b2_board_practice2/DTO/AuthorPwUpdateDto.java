@@ -1,4 +1,4 @@
-//package com.beyond.basic.b2_board.DTO;
+//package com.beyond.basic.b2_board_practice2.DTO;
 //
 //import lombok.AllArgsConstructor;
 //import lombok.Data;
@@ -8,8 +8,7 @@
 //@NoArgsConstructor
 //@AllArgsConstructor
 //
-//public class AuthorUpdatePwDto {
-//
+//public class AuthorPwUpdateDto {
 //    private String email;
 //    private String password;
 //}

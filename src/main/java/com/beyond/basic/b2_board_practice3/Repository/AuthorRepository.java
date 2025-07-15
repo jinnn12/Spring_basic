@@ -1,13 +1,12 @@
-package com.beyond.basic.b2_board_practice.Repository;
+package com.beyond.basic.b2_board_practice3.Repository;
 
-import com.beyond.basic.b2_board_practice.Domain.Author;
+import com.beyond.basic.b2_board_practice3.Domain.Author;
 import org.springframework.stereotype.Repository;
-
-import javax.swing.text.html.Option;
 import java.util.*;
 
 @Repository
-public class AuthorMemoryRepository {
+
+public class AuthorRepository {
     List<Author> authorList = new ArrayList<>();
     public static Long id = 1L;
 
@@ -21,11 +20,11 @@ public class AuthorMemoryRepository {
     }
 
     public Optional<Author> findById(Long id) {
-        return authorList.stream().filter(a -> a.getId().equals(id)).findFirst();
+        return authorList.stream().filter(author -> author.getId().equals(id)).findFirst();
     }
 
     public Optional<Author> findByEmail(String email) {
-        return authorList.stream().filter(a -> a.getEmail().equals(email)).findFirst();
+        return authorList.stream().filter(author -> author.getEmail().equals(email)).findFirst();
     }
 
     public void delete(Long id) {
@@ -37,9 +36,4 @@ public class AuthorMemoryRepository {
             }
         }
     }
-
-
 }
-
-
-

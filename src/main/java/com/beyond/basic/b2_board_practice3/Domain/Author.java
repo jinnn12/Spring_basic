@@ -1,6 +1,6 @@
-package com.beyond.basic.b2_board_practice.Domain;
+package com.beyond.basic.b2_board_practice3.Domain;
 
-import com.beyond.basic.b2_board_practice.Repository.AuthorMemoryRepository;
+import com.beyond.basic.b2_board_practice3.Repository.AuthorRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public class Author {
     private String password;
 
     public Author(String name, String email, String password) {
-        this.id = AuthorMemoryRepository.id;
+        this.id = AuthorRepository.id;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -26,11 +26,5 @@ public class Author {
         this.password = newPassword;
     }
 
+
 }
-
-
-
-
-
-
-
