@@ -49,13 +49,13 @@
 //    //    회원목록조회 : /author/list
 //    @GetMapping("/list")
 //    public List<AuthorListDto> findList() {
-//        return authorService.findList();
+//        return authorService.findAll2();
 //    }
 //
 //    //    회원상세조회 (Id로 조회) : /author/detail/1
 ////    서버에서 별도의 try catch를 하지 않으면, 에러 발생 시 500에러 + 스프링의 포맷으로 에러를 리턴
 //    @GetMapping("/detail/{id}")
-//    public ResponseEntity<?> findByIdprac(@PathVariable Long id) {
+//    public ResponseEntity<?> findById(@PathVariable Long id) {
 //        try {
 //            return new ResponseEntity<>(authorService.findById(id), HttpStatus.OK);
 ////            ResponseEntity<String> response = new ResponseEntity<>("OK", HttpStatus.OK); // 조회는 보통 oK
@@ -63,15 +63,10 @@
 //        } catch (NoSuchElementException e) {
 //            e.printStackTrace();
 //            ResponseEntity<String> response = new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//            System.out.println(response);
 //            return response;
 //        }
 //    }
-//
-//    @GetMapping("/detail/{inputEmail}")
-//    public Author findByEmail(@PathVariable String email) {
-//        return authorService.findByEmail(email);
-//    }
-//
 //
 ////    @GetMapping("/detail/{inputId}")
 ////    public AuthorDetailDto findById(@PathVariable Long inputId) {
@@ -86,7 +81,7 @@
 //
 //    //    비밀번호수정 : email로 password 수정 -> json, /author/updatepw
 ////    get:조회, post:등록, patch:부분수정, put:대체, delete:삭제
-//    @PatchMapping("/updatepw")
+//    @PatchMapping("/updatepassword")
 //    public void updatePw(@RequestBody AuthorUpdatePwDto authorUpdatePwDto) {
 //        authorService.updatePassword(authorUpdatePwDto);
 //    }

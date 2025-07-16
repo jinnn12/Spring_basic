@@ -5,8 +5,11 @@
 //import com.beyond.basic.b2_board.DTO.AuthorListDto;
 //import com.beyond.basic.b2_board.DTO.AuthorUpdatePwDto;
 //import com.beyond.basic.b2_board.Domain.Author;
-//import com.beyond.basic.b2_board.Repository.AuthorJdbcRepository;
-//import com.beyond.basic.b2_board.Repository.AuthorMemoryRepository;
+////import com.beyond.basic.b2_board.Repository.AuthorJdbcRepository;
+////import com.beyond.basic.b2_board.Repository.AuthorMemoryRepository;
+//import com.beyond.basic.b2_board.Repository.AuthorJpaRepository;
+//import com.beyond.basic.b2_board.Repository.AuthorMybatisRepository;
+//import com.beyond.basic.b2_board.Repository.AuthorRepository;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Service;
@@ -48,7 +51,7 @@
 ////    -> 반드시 초기화 되어야 하는 필드(final 등)을 대상으로 생성자를 자동 생성해주는 어노테이션
 ////    -> 다형성 설계는 불가하다
 ////    private final AuthorMemoryRepository authorMemoryRepository;
-//    private final AuthorJdbcRepository authorRepository;
+//    private final AuthorRepository authorRepository;
 //
 //    //        객체 조립은 서비스 담당
 //    public void save(AuthorCreateDto authorCreateDto) {
@@ -66,35 +69,43 @@
 //        this.authorRepository.save(author);
 //    }
 //
-//    public List<Author> findAll() {
-//        return authorRepository.findAll();
-//    }
+////    public List<Author> findAll() {
+////        return authorRepository.findAll();
+////    }
 //
-////    트랜잭션이 필요없는경우, 아래와 같이 명시적으로 제외
-//    @Transactional(readOnly = true)
-//    public List<AuthorListDto> findAll2() {
-//        return authorRepository.findAll().stream().map(a -> a.listFromEntity())
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<AuthorListDto> findList() {
-//        List<AuthorListDto> dtoList = new ArrayList<>();
-//        for (Author a : authorRepository.findAll()) {
-////            AuthorListDto dto = new AuthorListDto(a.getId(), a.getName(), a.getPassword());
-//            AuthorListDto dto = a.listFromEntity();
-//            dtoList.add(dto);
-//        }
-//        return dtoList; // 한 줄로 끝낼 수 있다고?!?!
-//    }
+////    public List<AuthorListDto> findList() {
+////        List<AuthorListDto> dtoList = new ArrayList<>();
+////        for (Author a : authorRepository.findAll()) {
+//////            AuthorListDto dto = new AuthorListDto(a.getId(), a.getName(), a.getPassword());
+////            AuthorListDto dto = a.listFromEntity();
+////            dtoList.add(dto);
+////        }
+////        return dtoList; // 한 줄로 끝낼 수 있다고?!?!
+////    }
 //
 //    //    트랜잭션이 필요없는경우, 아래와 같이 명시적으로 제외
 //    @Transactional(readOnly = true)
-//    public Author findById(Long id) throws NoSuchElementException{
-//        // Optional 객체, 예외는 다 서비스에서 터뜨려준다.
-////        왜? 예외를 터뜨리는건 service에서 하기 때문 -> 스프링에서 예외는 롤백의 기준
-////        예외처리는 Controller에서 함
-//        Optional<Author> optionalAuthor = authorRepository.findById(id);
-//        return optionalAuthor.orElseThrow(() -> new NoSuchElementException("찾고자 하는 아이디가 없습니다."));
+//    public List<AuthorListDto> findAll2() {
+//        return authorRepository.findAll().stream().map(author -> AuthorListDto.listFromEntity(author))
+//                .collect(Collectors.toList());
+//    }
+//
+////    public Author findById(Long id) throws NoSuchElementException{
+////        // Optional 객체, 예외는 다 서비스에서 터뜨려준다.
+//////        왜? 예외를 터뜨리는건 service에서 하기 때문 -> 스프링에서 예외는 롤백의 기준
+//////        예외처리는 Controller에서 함
+////        Optional<Author> optionalAuthor = authorRepository.findById(id);
+////        return optionalAuthor.orElseThrow(() -> new NoSuchElementException("찾고자 하는 아이디가 없습니다."));
+////    }
+//
+//    @Transactional(readOnly = true)
+//    public AuthorDetailDto findById(Long id) {
+//        Author author = authorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("아이디없음"));
+//    //        AuthorDetailDto dto = new AuthorDetailDto(author.getId(), author.getName(), author.getPassword());
+//    //        AuthorDetailDto dto = author.detailFromEntity();
+//        AuthorDetailDto dto = AuthorDetailDto.fromEntity(author);
+//
+//        return dto;
 //    }
 //
 //    public Author findByEmail(String email) {
@@ -102,22 +113,18 @@
 //        return optionalAuthor.orElseThrow(() -> new NoSuchElementException("찾고자 하는 이메일이 없습니다."));
 //    }
 //
-//    public AuthorDetailDto findByDtoId(Long id) {
-//        Author author = authorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("아이디없음"));
-////        AuthorDetailDto dto = new AuthorDetailDto(author.getId(), author.getName(), author.getPassword());
-////        AuthorDetailDto dto = author.detailFromEntity();
-//        AuthorDetailDto dto = AuthorDetailDto.fromEntity(author);
-//        return dto;
-//    }
+//
 //
 //    public void updatePassword(AuthorUpdatePwDto authorUpdatePwDto) {
 //       Author author = authorRepository.findByEmail(authorUpdatePwDto.getEmail()).orElseThrow(() -> new NoSuchElementException("찾고자 하는 이메일이 없습니다."));
+////       dirty checking : 객체를 수정한 후에 별도의 update 쿼리를 DB에 발생시키지 않아도
+////       영속성 컨텍스트에 의해 객체의 변경사항 자동으로 DB반영된다. 하지만 add는 안됨, update에서만 가능
 //       author.updatePassword(authorUpdatePwDto.getPassword());
 //    }
 //
 //    public void delete(Long id) {
-//        authorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("없는 사용자입니다."));
-//        authorRepository.delete(id);
+//        Author author = authorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("없는 사용자입니다."));
+//        authorRepository.delete(author);
 //    }
 //
 //

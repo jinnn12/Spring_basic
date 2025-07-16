@@ -43,8 +43,27 @@
 //    }
 //
 //    public List<Author> findAll() {
-//        return null;
+//        List<Author> authorList = new ArrayList<>();
+//        try {
+//            Connection connection = dataSource.getConnection();
+//            String sql = "select * from author";
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//            ResultSet rs = ps.executeQuery(); // 한 건의 조회 결과
+//            while (rs.next()) {
+//                Long id = rs.getLong("id");
+//                String name = rs.getString("name");
+//                String email = rs.getString("email");
+//                String password = rs.getString("password");
+//
+//                Author author = new Author(id, name, email, password);
+//                authorList.add(author);
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return authorList;
 //    }
+//
 //
 //    public Optional<Author> findById(Long inputId) { // 있을수도 없을수도 있으므로 optional, ofNullable()
 //        Author author = null;
@@ -53,15 +72,15 @@
 //            String sql = "select * from author where id = ?";
 //            PreparedStatement ps = connection.prepareStatement(sql);
 //            ps.setLong(1, inputId);
-//            ResultSet rs = ps.executeQuery();
-//            rs.next(); // 포인터를 컬럼에서 데이터로 변경
+//            ResultSet rs = ps.executeQuery(); // 한 건의 조회 결과
 //
-//            Long id = rs.getLong("id");
-//            String name = rs.getString("name");
-//            String email = rs.getString("email");
-//            String password = rs.getString("password");
-//
-//            author = new Author(id, name, email, password);
+//            if (rs.next()) { // 포인터를 컬럼에서 데이터로 변경
+//                Long id = rs.getLong("id");
+//                String name = rs.getString("name");
+//                String email = rs.getString("email");
+//                String password = rs.getString("password");
+//                author = new Author(id, name, email, password);
+//            }
 //
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
@@ -92,6 +111,17 @@
 //        }
 //
 //    public void delete(Long id) {
+//        try {
+//            Connection connection = dataSource.getConnection();
+//            String sql = "delete from author where id = ?";
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//            ps.setLong(1, id);
+//
+//            ps.executeUpdate(); // 추가, 수정의 경우는 executeUpdate, 조회는 executeQuery
+//        } catch (SQLException e) {
+////            unchecked 예외는 spring에서 트랜잭션 상황에서 롤백의 기준
+//            throw new RuntimeException(e);
+//        }
 //
 //    }
 //}
