@@ -8,6 +8,8 @@ import com.beyond.basic.b2_board.Author.Domain.Author;
 //import com.beyond.basic.b2_board.Repository.AuthorJdbcRepository;
 //import com.beyond.basic.b2_board.Repository.AuthorMemoryRepository;
 import com.beyond.basic.b2_board.Author.Repository.AuthorRepository;
+import com.beyond.basic.b2_board.Post.domain.Post;
+import com.beyond.basic.b2_board.Post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,7 @@ public class AuthorService {
 //    -> 다형성 설계는 불가하다
 //    private final AuthorMemoryRepository authorMemoryRepository;
     private final AuthorRepository authorRepository;
+    private final PostRepository postRepository;
 
     //        객체 조립은 서비스 담당
     public void save(AuthorCreateDto authorCreateDto) {
@@ -99,8 +102,12 @@ public class AuthorService {
         Author author = authorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("아이디없음"));
     //        AuthorDetailDto dto = new AuthorDetailDto(author.getId(), author.getName(), author.getPassword());
     //        AuthorDetailDto dto = author.detailFromEntity();
-        AuthorDetailDto dto = AuthorDetailDto.fromEntity(author);
 
+//        연관관계설정 없이 직접 조회해서 count값 찾는 경우
+//        List<Post> postList = postRepository.findByAuthor(author);
+//        AuthorDetailDto dto = AuthorDetailDto.fromEntity(author, postList.size());
+//        OneToMany연관관계 설정을 통해 count값을 찾는 경우 (postcount값 쓸 때 이게 좋지 않을까?)
+        AuthorDetailDto dto = AuthorDetailDto.fromEntity(author);
         return dto;
     }
 
@@ -108,8 +115,6 @@ public class AuthorService {
         Optional<Author> optionalAuthor = authorRepository.findByEmail(email);
         return optionalAuthor.orElseThrow(() -> new NoSuchElementException("찾고자 하는 이메일이 없습니다."));
     }
-
-
 
     public void updatePassword(AuthorUpdatePwDto authorUpdatePwDto) {
        Author author = authorRepository.findByEmail(authorUpdatePwDto.getEmail()).orElseThrow(() -> new NoSuchElementException("찾고자 하는 이메일이 없습니다."));

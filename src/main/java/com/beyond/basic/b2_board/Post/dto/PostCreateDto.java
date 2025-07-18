@@ -27,6 +27,7 @@ public class PostCreateDto {
                 .contents(this.contents)
 //                .authorId(this.authorId)
                 .author(author) // 객체를 찾아다가 넣어주기
+                .delYn("N")
                 .build();
     }
 }

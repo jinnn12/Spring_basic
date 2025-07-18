@@ -1,0 +1,45 @@
+#프로젝트 이름 설정 예시
+#spring.application.name=basic
+
+#서버 포트 기본값은 8080입니다
+#server.port=8080
+
+
+server:
+  port: 8080
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  # 아래는 jdbc의 기본 db 관련 설정인데, jdbc 뿐만 아니라 mybatis / jpa 등 spring의 대부분의 DB 기술에 동일하게 사용
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/board
+    username: root
+    password: 1234
+  jpa:
+    database: mysql
+#    innoDB를 쓰겠다 라는 설정 (마이아삼? 트랜잭션이 지원안되는 기술이랑 비교가 됨)
+    database-platform: org.hibernate.dialect.MariaDBDialect
+#    ddl문 자동생성 여부 true. 테이블은 자동생성(반영)해주나, 스키마는 반드시 사전에 생성 필요 (board 등)
+    generate-ddl: true
+#    jpa(인터페이스)의 실질적인 구현체는 hibernate
+    hibernate:
+#      create : 매번(서버재시작) table을 drop 후 재생성 -> 최초 시작때만 쓰고, 그 뒤로 쓰면 데이터 날아감
+#      update : entity 변경사항만 alter를 적용하고 기존데이터 유지
+#      validate : 실제 DB와의 차이점을 체크만 하고 ddl문 실행X, 콘솔로만 변경사항 출력
+#      db에다 alter table add column 사용해주기
+      ddl-auto: update
+#    콘솔창에 ddl, dml 등의 쿼리를 출력하여 보여주는 옵션
+    show_sql: true
+
+logging:
+  level:
+#    debug < info < error
+    root: info
+
+
+# mapper파일(mybatis의 쿼리파일)의 위치를 명시하고 scan. 기본적으로 resource 폴더는 default
+mybatis :
+  mapper-locations: classpath:/mapper/**/*.xml

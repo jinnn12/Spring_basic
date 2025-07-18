@@ -8,6 +8,10 @@ import com.beyond.basic.b2_board.Post.dto.PostListDto;
 import com.beyond.basic.b2_board.Post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +31,10 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> findAll() {
-        List<PostListDto> postListDto = postService.findAll();
+//    페이징처리를 위한 데이터 요청 형식 : localhost:8080/post/list?page=0&size=20&sort=title,asc
+//    Peageable은 입력값입니다, Repository에서 Page선언만 해주면 된다
+    public ResponseEntity<?> findAll(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostListDto> postListDto = postService.findAll(pageable);
         return new ResponseEntity<>(new CommonDto(postListDto, HttpStatus.CREATED.value(), "문구"), HttpStatus.CREATED);
     }
 

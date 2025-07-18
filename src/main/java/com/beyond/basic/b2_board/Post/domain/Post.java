@@ -1,6 +1,7 @@
 package com.beyond.basic.b2_board.Post.domain;
 
 import com.beyond.basic.b2_board.Author.Domain.Author;
+import com.beyond.basic.b2_board.Common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @ToString
-public class Post {
+public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,5 +25,7 @@ public class Post {
 //    그래서 일반적으로 'FetchType.LAZY(지연로딩)' 설정을 해준다. : author 객체를 사용하지 않는 한 author객체로 쿼리발생 X -> 성능이 당연히 높음
     @ManyToOne(fetch = FetchType.LAZY) // Post(n) : (1)Author -> ManyToOne, 관계성을 추가한 것이다.
     @JoinColumn(name = "author_id") // fk관계성 설정한 어노테이션, author라고 DB에 저장 못하니까 DB에 저장할 컬럼명
-    private Author author;
+    private Author author; // 객체만 가져왔는데 어디에 fk를 거냐? 바로 Author의 pk에 건다
+    @Builder.Default
+    private String delYn = "N";
 }
