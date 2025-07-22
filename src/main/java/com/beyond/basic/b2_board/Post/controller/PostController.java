@@ -1,7 +1,6 @@
 package com.beyond.basic.b2_board.Post.controller;
 
-import com.beyond.basic.b2_board.Author.DTO.CommonDto;
-import com.beyond.basic.b2_board.Author.DTO.CommonErrorDto;
+import com.beyond.basic.b2_board.Common.CommonDto;
 import com.beyond.basic.b2_board.Post.dto.PostCreateDto;
 import com.beyond.basic.b2_board.Post.dto.PostDetailDto;
 import com.beyond.basic.b2_board.Post.dto.PostListDto;
@@ -15,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
 
 @RestController
 @RequestMapping("/post")
@@ -31,7 +29,7 @@ public class PostController {
     }
 
     @GetMapping("/list")
-//    페이징처리를 위한 데이터 요청 형식 : localhost:8080/post/list?page=0&size=20&sort=title,asc
+//    페이징처리를 위한 데이터 요청 형식 : localhost:8080/post/list?page=0&size=20&sort=title,asc (param형식이 세팅 돼있다.) 이렇게 넘어오면 이렇게, 안 넘어오면 밑에 설정된 디폴트 값으로
 //    Peageable은 입력값입니다, Repository에서 Page선언만 해주면 된다
     public ResponseEntity<?> findAll(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<PostListDto> postListDto = postService.findAll(pageable);

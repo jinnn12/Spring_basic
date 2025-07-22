@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 
 // logback 객체 만드는 방법2.
-@Slf4j
+@Slf4j // (~= logback의 기본 구현체, log4j는 보안 이슈가 있었다)
 public class LogController {
 ////    logback 객체 만드는 방법1.
 //    private static final Logger logger = LoggerFactory.getLogger(LogController.class);

@@ -3,12 +3,17 @@ package com.beyond.basic.b2_board.Author.Controller;
 
 import com.beyond.basic.b2_board.Author.DTO.AuthorCreateDto;
 import com.beyond.basic.b2_board.Author.DTO.AuthorListDto;
+import com.beyond.basic.b2_board.Author.DTO.AuthorLoginDto;
 import com.beyond.basic.b2_board.Author.DTO.AuthorUpdatePwDto;
+import com.beyond.basic.b2_board.Author.Domain.Author;
 import com.beyond.basic.b2_board.Author.Service.AuthorService;
+import com.beyond.basic.b2_board.Common.CommonDto;
+import com.beyond.basic.b2_board.Common.JwtTokenProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +24,7 @@ import java.util.NoSuchElementException;
 @RequestMapping("/author")
 public class AuthorController {
     private final AuthorService authorService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     //    회원가입 : 회원가입을 위한 클래스 DTO를 따로 만들어야 한다, author 객체는 Long id, 가입일시 등
 //    사용자가 입력할 필요가 없는 것이 많기 때문이다. long id, 가입일시 등은 DB에 저장되는 용도
@@ -45,15 +51,20 @@ public class AuthorController {
     }
 
 
-    //    회원목록조회 : /author/list
+    //    회원목록조회 : /author/list -> admin user만 가능하도록
     @GetMapping("/list")
+//    ADMIN 권한이 있는지를 Authentication 객체에서 쉽게 확인
+//    'ROLE_'
+    @PreAuthorize("hasRole('ADMIN')")
     public List<AuthorListDto> findList() {
         return authorService.findAll2();
     }
 
-    //    회원상세조회 (Id로 조회) : /author/detail/1
+    //    회원상세조회 (Id로 조회) : /author/detail/1 -> admin user만 가능하도록
 //    서버에서 별도의 try catch를 하지 않으면, 에러 발생 시 500에러 + 스프링의 포맷으로 에러를 리턴
     @GetMapping("/detail/{id}")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('SELLER')") -> 이런 식의 api 권한 설정도 가능하다
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             return new ResponseEntity<>(authorService.findById(id), HttpStatus.OK);
@@ -90,5 +101,20 @@ public class AuthorController {
     @DeleteMapping("/delete/{inputId}")
     public void delete(@PathVariable Long inputId) {
         authorService.delete(inputId);
+    }
+
+//    로그인
+    @PostMapping("/doLogin")
+    public ResponseEntity<?> doLogin (@RequestBody AuthorLoginDto authorLoginDto) { // 성공하면 토큰을 줘야 함, 토큰 설계가 핵심
+        Author author = authorService.doLogin(authorLoginDto);
+//        토큰 생성 및 return
+        String token = jwtTokenProvider.createAtToken(author);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonDto.builder()
+                        .result(token)
+                        .statusCode(HttpStatus.CREATED.value())
+                        .statusMessage("Token is created")
+                        .build());
     }
 }

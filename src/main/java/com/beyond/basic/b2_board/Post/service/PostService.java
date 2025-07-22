@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +40,11 @@ public class PostService {
     public void save(PostCreateDto postCreateDto) {
 //        authorId가 실제 있는지 없는지 검증필요, 이제는 할 필요가 없다. author를 넣을거잖아?
 //        author를 save하면 JPA가 id만 쏙 빼서 DB에 저장할 것
-        Author author = authorRepository.findById(postCreateDto.getAuthorId()).orElseThrow(() -> new EntityNotFoundException("없는 사용자입니다."));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // 저장은 filter에서
+        String email = authentication.getName(); // claims의 subject : email
+        System.out.println(email);
+//        Author author = authorRepository.findById(postCreateDto.getAuthorId()).orElseThrow(() -> new EntityNotFoundException("없는 사용자입니다.")); // 원래는 직접 authorId 넣어줘야 하는데, 이제는 로그인하여 Authentication에서 알아서 만들어준다
+        Author author = authorRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("없는 사용자입니다."));
         postRepository.save(postCreateDto.toEntity(author));
     }
 
@@ -54,6 +60,7 @@ public class PostService {
 //        return postList.stream().map(a -> PostListDto.fromEntity(a)).collect(Collectors.toList());
 
 //        페이지 처리 findAll 호출
+//        Page 내부적으로 stream api 있다??
         Page<Post> postList = postRepository.findAllByDelYn(pageable, "N");
         return postList.map(a -> PostListDto.fromEntity(a));
     }

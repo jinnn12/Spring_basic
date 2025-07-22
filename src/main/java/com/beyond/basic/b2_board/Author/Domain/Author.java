@@ -35,14 +35,23 @@ public class Author extends BaseTimeEntity {
     private String password;
     @Enumerated(EnumType.STRING) // Enum 타입 할거면 이렇게 꼭 붙이기
     @Builder.Default // 빌더패턴에서 변수 초기화(디폴트값)시 @Builder.Default 필수
-    private Role role = Role.USER; // 초기값 세팅하는 경우 @Builder에서 이 초기값을 무시한다, 이때 @Builder.Default 사용, 초기값 무시하지마!
-//    컬럼명에 케멀케이스 사용하게 되면, DB에는 'created_time'으로 컬럼 생성 (JPA 룰)
+    private Role role = Role.USER;// 초기값 세팅하는 경우 @Builder에서 이 초기값을 무시한다, 이때 @Builder.Default 사용, 초기값 무시하지마!
+    @Builder.Default
+    private Role role_admin = Role.ADMIN;
 
 //    OneToMany는 완전히 선택사항, default가 LAZY, 하다보면 헷갈릴 수 있으니 fetch = FetchType.LAZY 다 쓰자
-//    mappedBy에는 ManyToOne(Post) 쪽의 변수 명을 문자열로 지정. fk관리를 반대편(post)쪽에서 한다는 의미 -> (fk의 주인)연관관계의주인 설정
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+//    mappedBy에는 ManyToOne(Post) 쪽의 변수 명을 문자열로 지정. fk관리를 반대편(post)쪽에서 한다는 의미 -> (fk가 설정 돼 있는게 연관관계의 주인)연관관계의주인 설정
+//    cascade : 부모 객체의 변화에 따라 자식객체가 같이 변하는.. , ALL로 두면 모두 가능이나 별로 좋은 코딩은 아님
+//            1) persist : 저장 -> 부모객체를 만들 때 자식객체도 연쇄적으로 같이 생성,
+//            2) remove : 삭제
+//    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    orphanRemoval = true : 연쇄 삭제(1:n:1:n ...) 자식의 자식까지 모두 삭제하는 경우에 사용
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default // 빌더패턴에선 초기화 진행 시 필수
     List<Post> postList = new ArrayList<>(); // OneToMany쓸 땐 초기화 필수
+
+    @OneToOne(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;
 
 
 //    public Author(String name, String email, String password) {
@@ -66,12 +75,5 @@ public class Author extends BaseTimeEntity {
         this.password = newPassword;
     }
 
-//    public AuthorDetailDto detailFromEntity() {
-//        return new AuthorDetailDto(this.id, this.name, this.email);
-//    }
-//
-//    public AuthorListDto listFromEntity() {
-//        return new AuthorListDto(this.id, this.name, this.password);
-//    }
 
 }

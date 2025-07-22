@@ -1,6 +1,5 @@
 package com.beyond.basic.b2_board.Common;
 
-import com.beyond.basic.b2_board.Author.DTO.CommonErrorDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +29,12 @@ public class CommonExceptionHandler {
         return new ResponseEntity<>(new CommonErrorDto(HttpStatus.BAD_REQUEST.value(), errorMessage), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> entityNotFound(EntityNotFoundException e) {
-        return new ResponseEntity<>(
-                new CommonErrorDto(HttpStatus.NOT_FOUND.value(), e.getMessage()),
-                HttpStatus.NOT_FOUND);
-    }
+//    @ExceptionHandler(EntityNotFoundException.class)
+//    public ResponseEntity<?> entityNotFound(EntityNotFoundException e) {
+//        return new ResponseEntity<>(
+//                new CommonErrorDto(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+//                HttpStatus.NOT_FOUND);
+//    }
 
 }
 

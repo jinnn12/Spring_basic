@@ -22,22 +22,26 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //    List<Post> findByAuthorId(Long authorId);
 //    보통은 객체로 찾는 것이 일반적이다
     List<Post> findByAuthor(Author author);
+//    List<Post> findByIdIsNotNull(); // 매개변수가 필요 없다, 당연히 notnull인 요소를 찾으면 되므로 이것 자체로 동작이 가능함
 
+//    jpql : 객체 지향의 쿼리
 //    jpql을 사용한 일반 inner join
 //    jpql는 기본적으로 LAZY 로딩을 지향하다보니, inner join으로 필터링은 하되 'post'객체만 조회 -> N+1문제 여전히 발생...
+//    N은 Post에서 사용하고 있는 author id의 개수만큼
 //    raw쿼리 : select 'p.*' from post p inner join author a on a.id = p.author_id;
     @Query("select p from Post p inner join p.author")
     List<Post> findAllJoin();
 
 
-//    jpql을 사용한 fetch inner join
+//    jpql을 사용한 fetch inner join : 우리가 생각하는 일반적인 inner join, jpa에서는 inner join fetch
 //    join시 post 뿐 아니라 author객체까지 한꺼번에 조립하여 조회 -> N+1 문제 해결
 //    raw쿼리 : select '*' from post p inner join author a on a.id=p.aurthor_id
+//    실은 페이징 처리를 함으로써 N+1 문제가 도드라지지는 않을 것 같다.
     @Query("select p from Post p inner join fetch p.author")
     List<Post> findAllFetchJoin();
 
 //    paging 처리 + delyn 적용
-//    Pageble : import com.beyond.basic.b2_board.Post.domain.Post;
+//    Pageable : import com.beyond.basic.b2_board.Post.domain.Post;
 //    Page 객체 안에 List<Post>, 전체페이지 수 등의 정보 포함
 //    Pageable객체 안에는 페이지 size, 페이지 번호정렬기준 등이 포함
 //    By가 where조건이라고 생각하면 된다
