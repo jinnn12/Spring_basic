@@ -24,6 +24,8 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
+    private final JwtAuthenticationHandler jwtAuthenticationHandler;
+    private final JwtAuthorizationHandler jwtAuthorizationHandler;
 
 //    내가 만든 객체는 @Component, 외부 라이브러리를 활용한 객체는 @Bean + @Configuration
 //    @Bean은 메서드 위에 붙여 Return 되는 객체를 싱글톤 객체로 생성한다
@@ -38,12 +40,16 @@ public class SecurityConfig {
 //                세션기반 로그인(mvc 패턴, ssr)에서는 csrf 별도 설정하는 것이 일반적이나
 //                토큰기반 로그인(rest api서버, csr)에서는 csrf 설정 않는 것이 일반적
                 .csrf(AbstractHttpConfigurer::disable)
-//                httpBasic : 인증 방법 중 하나, email/pw를 인코딩하여 인증(전송)하는 방식, 간단한 인증의 경우에만 사용한다
+//                httpBasic : 인증 방법 중 하나, email/pw를 인코딩하여 인증(전송)하는 방식, 간단한 인증의 경우에만 사용한다 / email/pw를 인코딩하여 전송하는 것이 굉장히 위험함
                 .httpBasic(AbstractHttpConfigurer::disable)
-//                세션 로그인 방식 비활성화 (세션 : stateful인데 -> STATELESS로 설정했으니 토큰로그인 방식으로 하겠다)
+//                세션 로그인 방식 비활성화 (세션 : stateful인데(인증값을 서버에서 가지고 있음) -> STATELESS로 설정했으니 토큰로그인 방식으로 하겠다)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                 token을 검증하고, token 검증을 통해 Authentication 객체 생성
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(e ->
+                        e.authenticationEntryPoint(jwtAuthenticationHandler) // 401의 경우 (token이 null일 때 로그인필요 등)
+                                .accessDeniedHandler(jwtAuthorizationHandler) // 403의 경우
+                )
 //                예외 api 정책 설정**
 //                athenticated() : 예외를 제외한 모든 요청에 대해서 Authentication객체가 생성 되기를 요구
                 .authorizeHttpRequests(a -> a.requestMatchers("/author/create", "/author/doLogin").permitAll().anyRequest().authenticated())

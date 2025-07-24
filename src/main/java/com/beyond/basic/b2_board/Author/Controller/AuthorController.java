@@ -1,11 +1,9 @@
 package com.beyond.basic.b2_board.Author.Controller;
 // 사용자와 커뮤니케이션 : Controller
 
-import com.beyond.basic.b2_board.Author.DTO.AuthorCreateDto;
-import com.beyond.basic.b2_board.Author.DTO.AuthorListDto;
-import com.beyond.basic.b2_board.Author.DTO.AuthorLoginDto;
-import com.beyond.basic.b2_board.Author.DTO.AuthorUpdatePwDto;
+import com.beyond.basic.b2_board.Author.DTO.*;
 import com.beyond.basic.b2_board.Author.Domain.Author;
+import com.beyond.basic.b2_board.Author.Repository.AuthorRepository;
 import com.beyond.basic.b2_board.Author.Service.AuthorService;
 import com.beyond.basic.b2_board.Common.CommonDto;
 import com.beyond.basic.b2_board.Common.JwtTokenProvider;
@@ -25,6 +23,7 @@ import java.util.NoSuchElementException;
 public class AuthorController {
     private final AuthorService authorService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthorRepository authorRepository;
 
     //    회원가입 : 회원가입을 위한 클래스 DTO를 따로 만들어야 한다, author 객체는 Long id, 가입일시 등
 //    사용자가 입력할 필요가 없는 것이 많기 때문이다. long id, 가입일시 등은 DB에 저장되는 용도
@@ -55,7 +54,8 @@ public class AuthorController {
     @GetMapping("/list")
 //    ADMIN 권한이 있는지를 Authentication 객체에서 쉽게 확인
 //    'ROLE_'
-    @PreAuthorize("hasRole('ADMIN')")
+//    권한이 없을 경우 filter chain에서 에러가 터진다
+    @PreAuthorize("hasRole('ADMIN')") // 제한이 있는 사용자만 요청을 할 수 있다, Authentication이 있는지 없는지 검사하는거임
     public List<AuthorListDto> findList() {
         return authorService.findAll2();
     }
@@ -108,13 +108,25 @@ public class AuthorController {
     public ResponseEntity<?> doLogin (@RequestBody AuthorLoginDto authorLoginDto) { // 성공하면 토큰을 줘야 함, 토큰 설계가 핵심
         Author author = authorService.doLogin(authorLoginDto);
 //        토큰 생성 및 return
-        String token = jwtTokenProvider.createAtToken(author);
+        String token = jwtTokenProvider.createAtToken(author); // author을 넘기는 이유는 payload를 조립하기 위해
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonDto.builder()
                         .result(token)
                         .statusCode(HttpStatus.CREATED.value())
                         .statusMessage("Token is created")
+                        .build());
+    }
+
+//    마이페이지
+    @GetMapping("/myinfo")
+    public ResponseEntity<?> myinfo() {
+        AuthorDetailDto authorDetailDto = authorService.getMyInfo();
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .body(CommonDto.builder()
+                        .result(authorDetailDto)
+                        .statusCode(HttpStatus.FOUND.value())
+                        .statusMessage("마이페이지")
                         .build());
     }
 }

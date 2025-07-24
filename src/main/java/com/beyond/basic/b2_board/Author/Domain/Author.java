@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 // JPA를 사용할 경우 @Entity는 반드시 붙여야 하는 어노테이션
 // JPA의 EntityManager에게 객체를 위임하기 위한 어노테이션
 // EntityManager는 영속성컨텍스트(엔터티(객체)의 현재상황)를 통해 DB 데이터 관리

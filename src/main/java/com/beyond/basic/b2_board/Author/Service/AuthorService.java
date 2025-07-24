@@ -9,6 +9,7 @@ import com.beyond.basic.b2_board.Post.domain.Post;
 import com.beyond.basic.b2_board.Post.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,6 +174,15 @@ public class AuthorService {
         } // null인 경우 체크를 해줬음
 
         return optionalAuthor.get(); // Author 타입의 원본 리턴
-
     }
+    @Transactional(readOnly = true)
+    public AuthorDetailDto getMyInfo() throws NoSuchElementException{
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Author author = authorRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다."));
+
+        return AuthorDetailDto.fromEntity(author);
+    }
+
+
 }

@@ -5,6 +5,8 @@ import com.beyond.basic.b2_board.Common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Builder
 @NoArgsConstructor
@@ -28,4 +30,13 @@ public class Post extends BaseTimeEntity {
     private Author author; // 객체만 가져왔는데 어디에 fk를 거냐? 바로 Author의 pk에 건다
     @Builder.Default
     private String delYn = "N";
+    @Builder.Default
+    private String appointment = "N";
+    private LocalDateTime appointmentTime;
+    private String category;
+
+
+    public void updateAppointment(String newAppointment) {
+        this.appointment = newAppointment;
+    }
 }

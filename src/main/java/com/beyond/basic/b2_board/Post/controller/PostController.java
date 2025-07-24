@@ -4,6 +4,7 @@ import com.beyond.basic.b2_board.Common.CommonDto;
 import com.beyond.basic.b2_board.Post.dto.PostCreateDto;
 import com.beyond.basic.b2_board.Post.dto.PostDetailDto;
 import com.beyond.basic.b2_board.Post.dto.PostListDto;
+import com.beyond.basic.b2_board.Post.dto.PostSearchDto;
 import com.beyond.basic.b2_board.Post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +32,20 @@ public class PostController {
     @GetMapping("/list")
 //    페이징처리를 위한 데이터 요청 형식 : localhost:8080/post/list?page=0&size=20&sort=title,asc (param형식이 세팅 돼있다.) 이렇게 넘어오면 이렇게, 안 넘어오면 밑에 설정된 디폴트 값으로
 //    Peageable은 입력값입니다, Repository에서 Page선언만 해주면 된다
-    public ResponseEntity<?> findAll(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<PostListDto> postListDto = postService.findAll(pageable);
+//    페이지는 0부터 시작, ',' 찍고 하나 넣으면 Parameter 방식 '&' 사용 가능
+    public ResponseEntity<?> findAll(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, PostSearchDto postSearchDto) {
+
+        Page<PostListDto> postListDto = postService.findAll(pageable, postSearchDto);
         return new ResponseEntity<>(new CommonDto(postListDto, HttpStatus.CREATED.value(), "문구"), HttpStatus.CREATED);
     }
 
     @GetMapping("/detail/{inputId}")
     public ResponseEntity<?> findById(@PathVariable Long inputId) {
         PostDetailDto postDetailDto = postService.findById(inputId);
-        return new ResponseEntity<>(new CommonDto(postDetailDto, HttpStatus.CREATED.value(), "post is found"),HttpStatus.CREATED);
-
+        return new ResponseEntity<>(new CommonDto(postDetailDto, HttpStatus.CREATED.value(), "post is found"), HttpStatus.CREATED);
     }
+
+
+
+
 }
